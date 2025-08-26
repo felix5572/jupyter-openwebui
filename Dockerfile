@@ -27,11 +27,14 @@ COPY . /app/
 # Install the extension (this will trigger the build via hatch)
 RUN pip install -e .
 
-# Create jupyter config directory
-RUN mkdir -p /root/.jupyter
+# Create jupyter config directory (user-agnostic)
+RUN mkdir -p /app/.jupyter
 
-# Copy configuration file
-COPY jupyter_server_config.py /root/.jupyter/jupyter_server_config.py
+# Copy configuration file to app directory
+COPY jupyter_server_config.py /app/.jupyter/jupyter_server_config.py
+
+# Set JUPYTER_CONFIG_DIR to use our config location
+ENV JUPYTER_CONFIG_DIR=/app/.jupyter
 
 # Set environment variables with default values
 ENV OPENWEBUI_URL=http://localhost:8080
