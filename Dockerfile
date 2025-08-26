@@ -28,13 +28,13 @@ COPY . /app/
 RUN pip install -e .
 
 # Create jupyter config directory (user-agnostic)
-RUN mkdir -p /app/.jupyter
+# RUN mkdir -p /app/.jupyter
 
 # Copy configuration file to app directory
-COPY jupyter_server_config.py /app/.jupyter/jupyter_server_config.py
+# COPY jupyter_server_config.py /app/.jupyter/jupyter_server_config.py
 
 # Set JUPYTER_CONFIG_DIR to use our config location
-ENV JUPYTER_CONFIG_DIR=/app/.jupyter
+# ENV JUPYTER_CONFIG_DIR=/app/.jupyter
 
 # Set environment variables with default values
 ENV OPENWEBUI_URL=http://localhost:8080
