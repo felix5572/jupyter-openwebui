@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Install JupyterLab and required Python packages
+# Install JupyterLab and required Python packages first
 RUN pip install --no-cache-dir \
     jupyterlab>=4.0.0,<5 \
     hatch \
@@ -24,12 +24,7 @@ RUN pip install --no-cache-dir \
 # Copy extension source code
 COPY . /app/
 
-# Install JupyterLab to get jlpm, then build the extension
-RUN pip install jupyterlab \
-    && jlpm install \
-    && jlpm build:prod
-
-# Install the extension in development mode
+# Install the extension (this will trigger the build via hatch)
 RUN pip install -e .
 
 # Create jupyter config directory
