@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.4.0
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: yfb222333@gmail.com
+author_name: felix5572
+has_binder: false
+has_settings: true
+kind: frontend
+labextension_name: jupyter-openwebui
+project_short_description: Open webui frontend to JupyterLab extension.
+python_name: jupyter_openwebui
+repository: https://github.com/felix5572/jupyter-openwebui.git
+test: true
+
