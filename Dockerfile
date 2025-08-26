@@ -27,14 +27,6 @@ COPY . /app/
 # Install the extension (this will trigger the build via hatch)
 RUN pip install -e .
 
-# Create jupyter config directory (user-agnostic)
-# RUN mkdir -p /app/.jupyter
-
-RUN mkdir -p /app/.jupyter \
-    && cp jupyter_server_config.py /app/.jupyter/
-
-ENV JUPYTER_CONFIG_DIR=/app/.jupyter
-
 # Set environment variables with default values
 ENV OPENWEBUI_URL=http://localhost:8080
 ENV JUPYTER_PORT=8888
@@ -42,14 +34,23 @@ ENV JUPYTER_PORT=8888
 # Expose the port
 EXPOSE 8888
 
-# Create startup script that updates config at runtime
+# Create startup script with all config via command line
 RUN echo '#!/bin/bash\n\
 echo "Starting JupyterLab with Open WebUI integration..."\n\
 echo "Open WebUI URL: ${OPENWEBUI_URL:-http://localhost:8080}"\n\
 echo "JupyterLab will be available at: http://localhost:$JUPYTER_PORT"\n\
+echo "Notebook directory: /app/notebooks"\n\
 \n\
-# Start JupyterLab\n\
-jupyter lab --no-browser --allow-root --ip=0.0.0.0 --port=$JUPYTER_PORT\n\
+# Start JupyterLab with all settings via command line\n\
+exec jupyter lab \\\n\
+  --no-browser \\\n\
+  --allow-root \\\n\
+  --ip=0.0.0.0 \\\n\
+  --port=$JUPYTER_PORT \\\n\
+  --ServerApp.token="${JUPYTER_TOKEN:-}" \\\n\
+  --ServerApp.password="${JUPYTER_PASSWORD:-}" \\\n\
+  --ServerApp.disable_check_xsrf=True \\\n\
+  --ServerApp.open_browser=False\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
 # Start command
