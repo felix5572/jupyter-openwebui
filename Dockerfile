@@ -17,7 +17,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 
 # Install JupyterLab and required Python packages first
 RUN pip install --no-cache-dir \
-    jupyterlab>=4.0.0,<5 \
+    jupyterlab \
     hatch \
     hatch-jupyter-builder
 
