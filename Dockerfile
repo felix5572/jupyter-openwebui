@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir \
     hatch \
     hatch-jupyter-builder
 
-# Copy extension source code
+# Copy extension source cod
 COPY . /app/
 
 # Install the extension (this will trigger the build via hatch)
@@ -30,12 +30,8 @@ RUN pip install -e .
 # Create jupyter config directory
 RUN mkdir -p /root/.jupyter
 
-# Create jupyter configuration file with environment variable support
-RUN echo "c.ServerApp.ip = '0.0.0.0'" > /root/.jupyter/jupyter_server_config.py \
-    && echo "c.ServerApp.port = 8888" >> /root/.jupyter/jupyter_server_config.py \
-    && echo "c.ServerApp.allow_root = True" >> /root/.jupyter/jupyter_server_config.py \
-    && echo "c.ServerApp.token = ''" >> /root/.jupyter/jupyter_server_config.py \
-    && echo "c.ServerApp.password = ''" >> /root/.jupyter/jupyter_server_config.py
+# Copy configuration file
+COPY jupyter_server_config.py /root/.jupyter/jupyter_server_config.py
 
 # Set environment variables with default values
 ENV OPENWEBUI_URL=http://localhost:8080
