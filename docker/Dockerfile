@@ -24,10 +24,10 @@ RUN pip install --no-cache-dir \
 # Copy extension source code
 COPY . /app/
 
-# Install Node.js dependencies and build the extension
-RUN npm install -g yarn \
-    && yarn install \
-    && yarn build:prod
+# Install JupyterLab to get jlpm, then build the extension
+RUN pip install jupyterlab \
+    && jlpm install \
+    && jlpm build:prod
 
 # Install the extension in development mode
 RUN pip install -e .
