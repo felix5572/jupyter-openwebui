@@ -45,8 +45,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     
     content.node.appendChild(iframe);
     
-    // 添加到左侧边栏
-    app.shell.add(content, 'left', { rank: 200 });
+    app.shell.add(content, 'right', { rank: 10 });
   }
 };
 

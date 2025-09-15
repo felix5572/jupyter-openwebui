@@ -1,5 +1,5 @@
 {
   "openwebUIUrl": "http://localhost:8080",
   "title": "Open WebUI",
-  "iconClass": "jp-ChatIcon"
+  "iconClass": "jp-Icon jp-Ic on-32"
 }
