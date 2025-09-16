@@ -3,6 +3,8 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { ILauncher } from '@jupyterlab/launcher';
+
 import { Widget } from '@lumino/widgets';
 import config from './config.json';
 
@@ -10,7 +12,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyter-openwebui:plugin',
   description: 'Open webui frontend to JupyterLab extension.',
   autoStart: true,
-  activate: (app: JupyterFrontEnd) => {
+  activate: (app: JupyterFrontEnd,  launcher: ILauncher) => {
     console.log('JupyterLab extension jupyter-openwebui is activated!');
   
     const openwebUIUrl = config.openwebUIUrl || 'http://localhost:8080';
@@ -107,6 +109,32 @@ const plugin: JupyterFrontEndPlugin<void> = {
         }, loadTimeout);
       }, 3000); // Let loading display for 3000ms
     };
+
+
+    const setupLauncher = () => {
+      if (!launcher) return;
+
+      // 添加命令
+      app.commands.addCommand('openwebui:activate', {
+        label: 'OpenWebUI Frontend',
+        caption: '🤖 Open AI Chat Agent & Chat',
+        execute: () => {
+          app.shell.activateById('openwebui-chat');
+        }
+      });
+
+      // 添加到启动器
+      launcher.add({
+        command: 'openwebui:activate',
+        category: 'Other',
+        rank: 1
+      });
+
+      console.log('Launcher item added');
+    };
+
+    // Setup launcher
+    setupLauncher();
   
     app.shell.add(content, 'left', { rank: 0 });
     
