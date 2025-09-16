@@ -45,8 +45,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
     
     content.node.appendChild(iframe);
     
-    app.shell.add(content, 'left', { rank: 10 });
+    app.shell.add(content, 'right', { rank: 20 });
     console.log('Open WebUI extension is activated!');
+
+    app.restored.then(() => {
+      console.log('App restored, activating OpenWebUI panel');
+      app.shell.activateById(content.id);
+    });
   }
 };
 
