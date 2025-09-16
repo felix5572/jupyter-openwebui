@@ -1,6 +1,7 @@
 import {
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
+  JupyterFrontEndPlugin,
+  ILabShell
 } from '@jupyterlab/application';
 
 import { Widget } from '@lumino/widgets';
@@ -10,7 +11,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyter-openwebui:plugin',
   description: 'Open webui frontend to JupyterLab extension.',
   autoStart: true,
-  activate: (app: JupyterFrontEnd) => {
+  requires: [ILabShell],
+  activate: (app: JupyterFrontEnd, labShell: ILabShell) => {
     console.log('JupyterLab extension jupyter-openwebui is activated!');
 
     // Get Open WebUI URL: config.json (environment variables handled at build time)
@@ -46,8 +48,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     content.node.appendChild(iframe);
     
     app.shell.add(content, 'right', { rank: 50, type: 'OpenWebUI'});
-    app.shell.expandRight();
-    app.shell.activateById(content.id);
+    labShell.expandRight();
+    labShell.activateById(content.id);
 
   }
 };
