@@ -115,13 +115,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
       if (!launcher) return;
 
       // 添加命令
+      console.log('Adding command to launcher');
       app.commands.addCommand('openwebui:activate', {
         label: 'OpenWebUI Frontend',
-        caption: '🤖 Open AI Chat Agent & Chat',
+        caption: 'Open WebUI Chat Agent & Chat',
         execute: () => {
           app.shell.activateById('openwebui-chat');
         }
       });
+
+      console.log('Command added to launcher');
 
       // 添加到启动器
       launcher.add({
@@ -135,9 +138,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     // Setup launcher
     setupLauncher();
+    console.log('Launcher setup complete');
   
     app.shell.add(content, 'left', { rank: 0 });
-    
+    console.log('Content added to shell');
     app.restored.then(() => {
       app.shell.activateById(content.id);
       loadIframe();
