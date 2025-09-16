@@ -41,23 +41,23 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
   
     const loadIframe = () => {
-      // 清理之前的定时器
+      // Clean up previous timers
       if (timeoutId) clearTimeout(timeoutId);
       if (retryTimeoutId) clearTimeout(retryTimeoutId);
       
       retryCount++;
-      console.log('开始加载，显示loading界面');
+      console.log('Before loading, showing loading page');
       showLoading();
       
-      // 等一下再创建iframe，让loading先显示
+      // Wait a bit before creating iframe to let loading display first
       setTimeout(() => {
-        console.log('创建iframe');
+        console.log('Creating iframe');
         const iframe = document.createElement('iframe');
         iframe.src = openwebUIUrl;
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
-        iframe.style.display = 'none'; // 先隐藏iframe
+        iframe.style.display = 'none'; // Hide iframe initially
         
         let loaded = false;
         
@@ -67,21 +67,21 @@ const plugin: JupyterFrontEndPlugin<void> = {
           if (timeoutId) clearTimeout(timeoutId);
           if (retryTimeoutId) clearTimeout(retryTimeoutId);
           
-          // 清空loading，显示iframe
+          // Clear loading and show iframe
           content.node.innerHTML = '';
           iframe.style.display = 'block';
           content.node.appendChild(iframe);
         };
         
-        // 把iframe添加到DOM，但保持隐藏
+        // Add iframe to DOM but keep it hidden
         content.node.appendChild(iframe);
         
-        // 超时检测
+        // Timeout detection
         timeoutId = setTimeout(() => {
           if (!loaded) {
             console.log(`OpenWebUI load timeout, attempt ${retryCount}/${maxRetries}`);
             
-            // 移除当前iframe
+            // Remove current iframe
             if (iframe.parentNode) {
               iframe.parentNode.removeChild(iframe);
             }
@@ -91,7 +91,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
                 loadIframe();
               }, retryDelay);
             } else {
-              // 最终失败
+              // Final failure
               content.node.innerHTML = `
                 <div style="padding: 20px; text-align: center; color: #d32f2f;">
                   <h3>❌ Unable to connect to OpenWebUI</h3>
@@ -105,7 +105,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
             }
           }
         }, loadTimeout);
-      }, 3000); // 让loading显示3000ms
+      }, 3000); // Let loading display for 3000ms
     };
   
     app.shell.add(content, 'left', { rank: 0 });
@@ -115,7 +115,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       loadIframe();
     }).catch((error) => {
       console.error('Failed to restore JupyterLab:', error);
-      // 即使恢复失败也尝试加载
+      // Try to load even if restoration fails
       loadIframe();
     });
   }
