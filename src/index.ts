@@ -7,7 +7,6 @@ import { ILauncher } from '@jupyterlab/launcher';
 
 import { Widget } from '@lumino/widgets';
 import config from './config.json';
-import { chatIcon } from '@jupyterlab/ui-components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyter-openwebui:plugin',
