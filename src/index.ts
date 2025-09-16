@@ -10,8 +10,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyter-openwebui:plugin',
   description: 'Open webui frontend to JupyterLab extension.',
   autoStart: true,
-  activate: (app: JupyterFrontEnd) => {
+  activate: async (app: JupyterFrontEnd) => {  // 改成 async
     console.log('JupyterLab extension jupyter-openwebui is activated!');
+
+    // 等待应用完全加载
+    await app.restored;
 
     // Get Open WebUI URL: config.json (environment variables handled at build time)
     const openwebUIUrl = config.openwebUIUrl || 'http://localhost:8080';
@@ -45,8 +48,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
     
     content.node.appendChild(iframe);
     
-    app.shell.add(content, 'left', { rank: 20 });
+    app.shell.add(content, 'left', { rank: 0 });  // 改成 0，优先级更高
     console.log('Open WebUI extension is activated!');
+
+    // 简化：只延迟一次激活
+    setTimeout(() => {
+      app.shell.activateById(content.id);
+      console.log('Open WebUI panel activated');
+    }, 800);
   }
 };
 
