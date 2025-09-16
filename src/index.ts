@@ -12,17 +12,20 @@ const plugin: JupyterFrontEndPlugin<void> = {
   description: 'Open webui frontend to JupyterLab extension.',
   autoStart: true,
   requires: [ILabShell],
-  activate: (app: JupyterFrontEnd, labShell: ILabShell) => {
+  activate: async (app: JupyterFrontEnd, labShell: ILabShell) => {
     console.log('JupyterLab extension jupyter-openwebui is activated!');
 
-    // Get Open WebUI URL: config.json (environment variables handled at build time)
+    // 等待应用完全加载
+    await app.restored;
+
+    // Get Open WebUI URL
     const openwebUIUrl = config.openwebUIUrl || 'http://localhost:8080';
     console.log(`Open WebUI URL: ${openwebUIUrl}`);
 
     // 创建聊天面板
     const content = new Widget();
     content.id = 'openwebui-chat';
-    content.title.label = config.title || 'Open WebUI';
+    content.title.label = config.title || 'Open WebUI'; 
     content.title.closable = true;
     content.title.iconClass = config.iconClass;
     
@@ -47,9 +50,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
     
     content.node.appendChild(iframe);
     
-    app.shell.add(content, 'right', { rank: 50, type: 'OpenWebUI'});
+    // 添加到右侧边栏
+    labShell.add(content, 'right', { rank: 50 });
+    
+    // 确保右侧边栏展开并激活面板
     labShell.expandRight();
     labShell.activateById(content.id);
+
+    console.log('右侧边栏已展开，面板已激活');
 
   }
 };
