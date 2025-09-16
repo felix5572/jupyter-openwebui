@@ -45,7 +45,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     
     content.node.appendChild(iframe);
     
-    app.shell.add(content, 'main', { mode: 'split-left' });
+    app.shell.add(content, 'bottom', { rank: 50 });
   }
 };
 
