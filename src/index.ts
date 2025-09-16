@@ -12,6 +12,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyter-openwebui:plugin',
   description: 'Open webui frontend to JupyterLab extension.',
   autoStart: true,
+  requires: [ILauncher],
   activate: (app: JupyterFrontEnd,  launcher: ILauncher) => {
     console.log('JupyterLab extension jupyter-openwebui is activated!');
   
@@ -112,8 +113,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
 
     const setupLauncher = () => {
-      if (!launcher) return;
-
       // 添加命令
       console.log('Adding command to launcher');
       app.commands.addCommand('openwebui:activate', {
