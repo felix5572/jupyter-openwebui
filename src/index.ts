@@ -46,8 +46,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
     content.node.appendChild(iframe);
     
     app.shell.add(content, 'right', { rank: 50, type: 'OpenWebUI'});
+    app.shell.expandRight();
+    app.shell.activateById(content.id);
 
-    app.commands.execute('application:activate-right-tab-bar');
   }
 };
 
