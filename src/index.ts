@@ -31,6 +31,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const loadTimeout = 20000;
     let timeoutId: number;
     let retryTimeoutId: number;
+    let isInitialized = false;
   
     const showLoading = () => {
       content.node.innerHTML = `
@@ -65,12 +66,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
         let loaded = false;
         
         iframe.onload = () => {
-          loaded = true;
           console.log('OpenWebUI loaded successfully');
           if (timeoutId) clearTimeout(timeoutId);
           if (retryTimeoutId) clearTimeout(retryTimeoutId);
           
-          // Clear loading and show iframe
+          loaded = true;
+          iframe.onload = null;
+            
+            // Clear loading and show iframe
           content.node.innerHTML = '';
           iframe.style.display = 'block';
           content.node.appendChild(iframe);
@@ -138,18 +141,26 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     // Setup launcher
     setupLauncher();
-    console.log('Launcher setup complete');
-  
-    app.shell.add(content, 'left', { rank: 0 });
-    console.log('Content added to shell');
-    app.restored.then(() => {
-      app.shell.activateById(content.id);
-      loadIframe();
-    }).catch((error) => {
-      console.error('Failed to restore JupyterLab:', error);
-      // Try to load even if restoration fails
-      loadIframe();
-    });
+
+    const initIframe = () => {
+      if (isInitialized) return;
+      console.log('Launcher setup complete');
+    
+      app.shell.add(content, 'left', { rank: 0 });
+      console.log('Content added to shell');
+      app.restored.then(() => {
+        app.shell.activateById(content.id);
+        loadIframe();
+      }).catch((error) => {
+        console.error('Failed to restore JupyterLab:', error);
+        // Try to load even if restoration fails
+        loadIframe();
+      });
+      isInitialized = true;
+      };
+
+    console.log('Initializing iframe');
+    initIframe();
   }
 };
 
