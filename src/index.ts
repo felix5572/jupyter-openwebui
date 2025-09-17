@@ -6,6 +6,7 @@ import {
 import { ILauncher } from '@jupyterlab/launcher';
 
 import { Widget } from '@lumino/widgets';
+import { buildIcon } from '@jupyterlab/ui-components';
 import config from './config.json';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -115,27 +116,38 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
 
 
+    const loadOpenWebUIUrl = async () => {
+      try {
+          // 读取 txt 文件
+          const response = await fetch('/openwebui_url.txt');
+          const url = await response.text();
+          return url.trim(); // 去掉可能的换行符
+      } catch (error) {
+          console.warn('URL file not found, using fallback');
+          return 'http://localhost:8080'; // fallback URL
+      }
+    };
+
     const setupLauncher = () => {
       // 添加命令
       console.log('Adding command to launcher');
       app.commands.addCommand('openwebui:activate', {
-        label: 'OpenWebUI Frontend',
-        caption: 'Open WebUI Chat Agent & Chat',
-        iconLabel: '🤖',
-        execute: () => {
-          app.shell.activateById('openwebui-chat');
-        }
+          label: 'OpenWebUI Frontend',
+          caption: 'Open WebUI Chat Agent & Chat',
+          icon: buildIcon,
+          execute: async () => {
+              const webUIUrl = await loadOpenWebUIUrl();
+              console.log(`Opening: ${webUIUrl}`);
+              window.open(webUIUrl, '_blank');
+          }
       });
-
       console.log('Command added to launcher');
-
       // 添加到启动器
       launcher.add({
         command: 'openwebui:activate',
         category: 'Other',
         rank: 1
       });
-
       console.log('Launcher item added');
     };
 
