@@ -60,6 +60,18 @@ const plugin: JupyterFrontEndPlugin<void> = {
   
     const loadIframe = async () => {
       // Clean up previous timers
+      try {
+        await fetch(openWebUIUrl, { method: 'HEAD', mode: 'no-cors' });
+      } catch {
+        // 如果连接失败，延迟后重试整个loadIframe
+        if (retryCount < maxRetries) {
+          retryTimeoutId = setTimeout(() => {
+            loadIframe();
+          }, retryDelay);
+          return;
+        }
+      }
+      
       if (timeoutId) clearTimeout(timeoutId);
       if (retryTimeoutId) clearTimeout(retryTimeoutId);
       
