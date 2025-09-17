@@ -40,8 +40,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     
     let retryCount = 0;
     const maxRetries = 8;
-    const retryDelay = 4000;
-    const loadTimeout = 20000;
+    const retryDelay = 5000;
+    const loadTimeout = 40000;
     let timeoutId: number;
     let retryTimeoutId: number;
     let isInitialized = false;
