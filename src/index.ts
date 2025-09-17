@@ -19,15 +19,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     const loadOpenWebUIUrl = async () => {
       try {
-          // 读取 txt 文件
-          const response = await fetch('/open_webui_url.txt');
-          const url = await response.text();
-          const openWebUIUrl = url.trim();
-          console.log(`Open WebUI URL: ${openWebUIUrl}`);
-          return openWebUIUrl;
+        const response = await fetch('/api/contents/open_webui_url.txt'); //    file at   /open_webui_url.txt in the root of the server
+        const data = await response.json();
+        const openWebUIUrl = data.content.trim();
+        console.log(`Open WebUI URL: ${openWebUIUrl}`);
+        return openWebUIUrl;
       } catch (error) {
-          console.warn('URL file not found, using fallback');
-          return 'http://localhost:8080';
+        console.warn('URL file not found, using fallback');
+        return 'http://localhost:8080';
       }
     };
 

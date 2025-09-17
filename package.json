@@ -1,6 +1,6 @@
 {
     "name": "jupyter-openwebui",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Open webui frontend to JupyterLab extension.",
     "keywords": [
         "jupyter",
