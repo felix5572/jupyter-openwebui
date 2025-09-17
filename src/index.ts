@@ -14,11 +14,24 @@ const plugin: JupyterFrontEndPlugin<void> = {
   description: 'Open webui frontend to JupyterLab extension.',
   autoStart: true,
   requires: [ILauncher],
-  activate: (app: JupyterFrontEnd,  launcher: ILauncher) => {
+  activate: async (app: JupyterFrontEnd,  launcher: ILauncher) => {
     console.log('JupyterLab extension jupyter-openwebui is activated!');
-  
-    const openwebUIUrl = config.openwebUIUrl || 'http://localhost:8080';
-    console.log(`Open WebUI URL: ${openwebUIUrl}`);
+
+    const loadOpenWebUIUrl = async () => {
+      try {
+          // 读取 txt 文件
+          const response = await fetch('/open_webui_url.txt');
+          const url = await response.text();
+          const openWebUIUrl = url.trim();
+          console.log(`Open WebUI URL: ${openWebUIUrl}`);
+          return openWebUIUrl;
+      } catch (error) {
+          console.warn('URL file not found, using fallback');
+          return 'http://localhost:8080';
+      }
+    };
+
+    const openWebUIUrl = await loadOpenWebUIUrl() || config.openWebUIUrl || 'http://localhost:8080';
   
     const content = new Widget();
     content.id = 'openwebui-chat';
@@ -35,17 +48,18 @@ const plugin: JupyterFrontEndPlugin<void> = {
     let isInitialized = false;
   
     const showLoading = () => {
+      
       content.node.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; color: #666;">
           <div style="font-size: 18px; margin-bottom: 10px;">🤖 Loading OpenWebUI...</div>
-          <div style="font-size: 14px;">Connecting to ${openwebUIUrl}</div>
+          <div style="font-size: 14px;">Connecting to ${openWebUIUrl}</div>
           <div style="margin-top: 15px; font-size: 12px;">Attempt ${retryCount + 1} of ${maxRetries}</div>
           <div style="margin-top: 10px; font-size: 12px; color: #999;">Please wait...</div>
         </div>
       `;
     };
   
-    const loadIframe = () => {
+    const loadIframe = async () => {
       // Clean up previous timers
       if (timeoutId) clearTimeout(timeoutId);
       if (retryTimeoutId) clearTimeout(retryTimeoutId);
@@ -58,7 +72,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       setTimeout(() => {
         console.log('Creating iframe');
         const iframe = document.createElement('iframe');
-        iframe.src = openwebUIUrl;
+        iframe.src = openWebUIUrl;
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
@@ -102,7 +116,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
               content.node.innerHTML = `
                 <div style="padding: 20px; text-align: center; color: #d32f2f;">
                   <h3>❌ Unable to connect to OpenWebUI</h3>
-                  <p>URL: ${openwebUIUrl}</p>
+                  <p>URL: ${openWebUIUrl}</p>
                   <p>Service may not be running. Please start OpenWebUI and refresh.</p>
                   <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">
                     Refresh Page
@@ -116,17 +130,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
 
 
-    const loadOpenWebUIUrl = async () => {
-      try {
-          // 读取 txt 文件
-          const response = await fetch('/openwebui_url.txt');
-          const url = await response.text();
-          return url.trim(); // 去掉可能的换行符
-      } catch (error) {
-          console.warn('URL file not found, using fallback');
-          return 'http://localhost:8080'; // fallback URL
-      }
-    };
+    
 
     const setupLauncher = () => {
       // 添加命令
