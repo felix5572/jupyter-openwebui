@@ -93,6 +93,22 @@ const plugin: JupyterFrontEndPlugin<void> = {
         
         iframe.onload = () => {
           console.log('OpenWebUI loaded successfully');
+
+
+          try {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+            const title = iframeDoc?.title || '';
+            const body = iframeDoc?.body?.innerText || '';
+            
+            if (title.includes('无法访问') || title.includes("'This site can't be reached'") || 
+                body.includes('ERR_CONNECTION_REFUSED') || body.includes('ERR_CONNECTION_TIMED_OUT')) {
+              console.log('Detected Chrome error page, treating as load failure');
+              return; 
+            }
+          } catch (e) {
+            console.log('Cross-origin iframe, assuming real service loaded');
+          }
+          
           if (timeoutId) clearTimeout(timeoutId);
           if (retryTimeoutId) clearTimeout(retryTimeoutId);
           
