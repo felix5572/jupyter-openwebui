@@ -100,7 +100,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
             const title = iframeDoc?.title || '';
             const body = iframeDoc?.body?.innerText || '';
             
-            if (title.includes('无法访问') || title.includes("'This site can't be reached'") || 
+            if (title.includes('无法访问') || title.includes("This site can't be reached") || 
                 body.includes('ERR_CONNECTION_REFUSED') || body.includes('ERR_CONNECTION_TIMED_OUT')) {
               console.log('Detected Chrome error page, treating as load failure');
               return; 
