@@ -67,7 +67,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       
       content.node.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; color: #666;">
-          <div style="font-size: 18px; margin-bottom: 10px;">🤖 Loading OpenWebUI...</div>
+          <div style="font-size: 18px; margin-bottom: 10px;">💬 Loading OpenWebUI...</div>
           <div style="font-size: 14px;">Connecting to ${openWebUIUrl}</div>
           <div style="margin-top: 15px; font-size: 12px;">Attempt ${retryCount + 1} of ${maxRetries}</div>
           <div style="margin-top: 10px; font-size: 12px; color: #999;">Please wait...</div>
@@ -176,9 +176,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     const adkContent = new Widget();
     adkContent.id = 'Google-adkWeb';
-    adkContent.title.label = 'ADK App';
+    adkContent.title.label = '🤖 Agent ADK App';
     adkContent.title.closable = true;
-    adkContent.title.iconClass = 'jp-Icon jp-Icon-16'; 
+    adkContent.title.iconClass = config.iconClass || ''; 
 
     const loadAdkIframe = async () => {
       try {
@@ -223,7 +223,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       console.log('Adding command to launcher');
       app.commands.addCommand('openwebui:activate', {
         label: 'OpenWebUI Frontend',
-        caption: 'Open WebUI Chat Agent & Chat',
+        caption: 'Open WebUI Chat Webpage',
         icon: buildIcon,
         execute: async () => {
             const webUIUrl = await loadOpenWebUIUrl();
