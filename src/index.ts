@@ -17,20 +17,37 @@ const plugin: JupyterFrontEndPlugin<void> = {
   activate: async (app: JupyterFrontEnd,  launcher: ILauncher) => {
     console.log('JupyterLab extension jupyter-openwebui is activated!');
 
-    const loadOpenWebUIUrl = async () => {
-      try {
-        const response = await fetch('/api/contents/open_webui_url.txt'); //    file at   /open_webui_url.txt in the root of the server
-        const data = await response.json();
-        const openWebUIUrl = data.content.trim();
-        console.log(`Open WebUI URL: ${openWebUIUrl}`);
-        return openWebUIUrl;
-      } catch (error) {
-        console.warn('URL file not found, using fallback');
-        return 'http://localhost:8080';
-      }
-    };
+      const loadOpenWebUIUrl = async () => {
+        try {
+          const response = await fetch('/api/contents/open_webui_url.txt'); //    file at   /open_webui_url.txt in the root of the server
+          const data = await response.json();
+          const openWebUIUrl = data.content.trim();
+          console.log(`Open WebUI URL: ${openWebUIUrl}`);
+          return openWebUIUrl;
+        } catch (error) {
+          console.warn('URL file not found, using fallback');
+          return 'http://localhost:8080';
+        }
+      };
+
+      const loadAdkAppUrl = async () => {
+        try {
+          const response = await fetch('/api/contents/adk_app_url.txt'); //    file at   /open_webui_url.txt in the root of the server
+          const data = await response.json();
+          const adkAppUrl = data.content.trim();
+          console.log(`ADK App URL: ${adkAppUrl}`);
+          return adkAppUrl;
+        } catch (error) {
+          console.warn('ADK App URL file not found, using fallback');
+          return 'http://localhost:8001';
+        }
+      };
+
+
 
     const openWebUIUrl = await loadOpenWebUIUrl() || config.openWebUIUrl || 'http://localhost:8080';
+    const adkAppUrl = await loadAdkAppUrl() || config.adkAppUrl || 'http://localhost:8001';
+    
   
     const content = new Widget();
     content.id = 'openwebui-chat';
@@ -157,29 +174,78 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
 
 
-    
+    const adkContent = new Widget();
+    adkContent.id = 'Google-adkWeb';
+    adkContent.title.label = 'ADK App';
+    adkContent.title.closable = true;
+    adkContent.title.iconClass = 'jp-Icon jp-Icon-16'; 
+
+    const loadAdkIframe = async () => {
+      try {
+        await fetch(adkAppUrl, { method: 'HEAD', mode: 'no-cors' });
+      } catch {
+        console.warn('ADK App not accessible');
+      }
+      
+      adkContent.node.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px;">
+          <div style="font-size: 18px; margin-bottom: 10px;">🤖 Loading ADK App...</div>
+          <div style="font-size: 14px;">Connecting to ${adkAppUrl}</div>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        const iframe = document.createElement('iframe');
+        iframe.src = adkAppUrl;
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        
+        iframe.onload = () => {
+          console.log('ADK App loaded successfully');
+          adkContent.node.innerHTML = '';
+          adkContent.node.appendChild(iframe);
+        };
+        
+        adkContent.node.appendChild(iframe);
+      }, 3000);
+    };
 
     const setupLauncher = () => {
       // 添加命令
       console.log('Adding command to launcher');
       app.commands.addCommand('openwebui:activate', {
-          label: 'OpenWebUI Frontend',
-          caption: 'Open WebUI Chat Agent & Chat',
-          icon: buildIcon,
-          execute: async () => {
-              const webUIUrl = await loadOpenWebUIUrl();
-              console.log(`Opening: ${webUIUrl}`);
-              window.open(webUIUrl, '_blank');
-          }
+        label: 'OpenWebUI Frontend',
+        caption: 'Open WebUI Chat Agent & Chat',
+        icon: buildIcon,
+        execute: async () => {
+            const webUIUrl = await loadOpenWebUIUrl();
+            console.log(`Opening: ${webUIUrl}`);
+            window.open(webUIUrl, '_blank');
+        }
       });
       console.log('Command added to launcher');
       // 添加到启动器
       launcher.add({
         command: 'openwebui:activate',
         category: 'Other',
-        rank: 1
+        rank: 5
       });
       console.log('Launcher item added');
+      app.commands.addCommand('adkapp:activate', {
+        label: 'ADK App',
+        caption: 'Open ADK Application',
+        icon: buildIcon,
+        execute: async () => {
+          const adkUrl = await loadAdkAppUrl();
+          window.open(adkUrl, '_blank');
+        }
+      });
+      launcher.add({
+        command: 'adkapp:activate',
+        category: 'Other',
+        rank: 8
+      });
     };
 
     // Setup launcher
@@ -189,21 +255,25 @@ const plugin: JupyterFrontEndPlugin<void> = {
       if (isInitialized) return;
       console.log('Launcher setup complete');
     
-      app.shell.add(content, 'left', { rank: 0 });
+      app.shell.add(content, 'left', { rank: 5 });
+      app.shell.add(adkContent, 'left', { rank: 8 });
       console.log('Content added to shell');
       app.restored.then(() => {
         app.shell.activateById(content.id);
         loadIframe();
+        loadAdkIframe();
       }).catch((error) => {
         console.error('Failed to restore JupyterLab:', error);
         // Try to load even if restoration fails
         loadIframe();
+        loadAdkIframe();
       });
       isInitialized = true;
       };
 
     console.log('Initializing iframe');
     initIframe();
+    // initAdkIframe();
   }
 };
 
