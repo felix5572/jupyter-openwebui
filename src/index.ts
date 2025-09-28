@@ -200,9 +200,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
+        iframe.style.display = 'none';
+
+        let adkwebLoaded = false;
         
         iframe.onload = () => {
           console.log('ADK App loaded successfully');
+          if (adkwebLoaded) return;
+          adkwebLoaded = true;
+          iframe.onload = null;
+          iframe.style.display = 'block';
           adkContent.node.innerHTML = '';
           adkContent.node.appendChild(iframe);
         };
