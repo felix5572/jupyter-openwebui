@@ -28,8 +28,11 @@ COPY . /app/
 RUN pip install -e .
 
 # Set environment variables with default values
-ENV OPENWEBUI_URL=http://localhost:8080
+ENV OPENWEBUI_URL=https://open-webui-usw.zeabur.app
 ENV JUPYTER_PORT=8888
+
+RUN echo 'https://open-webui-usw.zeabur.app' > /open_webui_url.txt
+RUN echo 'https://deepmd-google-adk-web.zeabur.app' > /adk_app_url.txt
 
 # Expose the port
 EXPOSE 8888
