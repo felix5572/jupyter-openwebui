@@ -6,13 +6,14 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    curl \
+    curl strace rsync vim-tiny htop tree sqlite3  net-tools \
     git \
     build-essential \
+    fonts-wqy-zenhei \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (required for building JupyterLab extensions)
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs
 
 # Install JupyterLab and required Python packages first
@@ -31,6 +32,11 @@ RUN pip install --no-cache-dir \
     ase pymatgen dpdata dpdispatcher \
     hatch-jupyter-builder
 
+RUN mkdir -p /root/.config/matplotlib && \
+    echo "font.family: sans-serif" > /root/.config/matplotlib/matplotlibrc && \
+    echo "font.sans-serif: WenQuanYi Zen Hei, SimHei, DejaVu Sans" >> /root/.config/matplotlib/matplotlibrc && \
+    echo "axes.unicode_minus: False" >> /root/.config/matplotlib/matplotlibrc && \
+    rm -rf /root/.cache/matplotlib
 # Copy extension source cod
 COPY . /app/
 
