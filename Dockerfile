@@ -18,7 +18,17 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Install JupyterLab and required Python packages first
 RUN pip install --no-cache-dir \
     jupyterlab \
+    numpy \
+    pandas \
+    matplotlib \
+    seaborn \
+    scikit-learn \
+    scipy \
+    statsmodels \
     hatch \
+    google-adk  fastapi fastmcp python-jose  uvicorn dotenv litellm \
+    ipywidgets seaborn tqdm loguru modal \
+    ase pymatgen dpdata dpdispatcher \
     hatch-jupyter-builder
 
 # Copy extension source cod
